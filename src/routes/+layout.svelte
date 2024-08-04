@@ -11,10 +11,10 @@
 			localStorage.setItem('projects', JSON.stringify([]));
 		}
 
-		localStorage.setItem(
-			'projects',
-			JSON.stringify(['mimlAPI', 'Cool-mod-1', 'wow-EVEN-cooler']),
-		);
+		// localStorage.setItem(
+		// 	'projects',
+		// 	JSON.stringify(['mimlAPI', 'Cool-mod-1', 'wow-EVEN-cooler']),
+		// );
 	});
 
 	let openProjectRender = false;
