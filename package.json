@@ -16,6 +16,7 @@
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@tailwindcss/typography": "^0.5.13",
     "@types/bun": "^1.1.6",
+    "@types/umami": "^2.10.0",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "svelte": "^4.2.7",

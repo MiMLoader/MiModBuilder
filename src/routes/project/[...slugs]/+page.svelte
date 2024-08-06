@@ -16,6 +16,8 @@
 		) {
 			projectExists = false;
 		}
+		const titleEnd = document.title;
+		document.title = `${window.location.href.split('/').at(-1)} | ${titleEnd}`;
 	});
 
 	editorStore.set(true);

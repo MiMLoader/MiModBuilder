@@ -16,6 +16,7 @@
 	let editor: boolean;
 
 	const newItem = (name?: string) => {
+		umami.track('items created');
 		const currItemStore = get(itemsStore);
 		name = `New Item ${(crypto.randomUUID().split('-').at(-1) as string) + currItemStore.length}`;
 		itemsStore.update((v) => {
@@ -55,6 +56,7 @@
 
 	let newProjectRender = false;
 	const newProjectView = () => {
+		umami.track('projects created');
 		newProjectRender = true;
 	};
 

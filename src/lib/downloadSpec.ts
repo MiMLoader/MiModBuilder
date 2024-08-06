@@ -1,7 +1,7 @@
 import { toast } from 'svelte-sonner';
 
 const downloadSpec = (project: string) => {
-    toast.success(`Generating and downloading ${project}`);
+    toast.info(`Generating and downloading ${project}`);
     const projectSpec = localStorage.getItem(`project${project}`);
     if (projectSpec === null) return toast.error(`Couldn't find ${project}`);
     const downloadElement = document.createElement('a');
@@ -11,6 +11,7 @@ const downloadSpec = (project: string) => {
     downloadElement.setAttribute('download', `${project}.spec.json`);
     document.body.appendChild(downloadElement).click();
     document.body.removeChild(downloadElement);
+    umami.track('spec saved');
 };
 
 export default downloadSpec;
