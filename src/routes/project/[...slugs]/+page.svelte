@@ -6,6 +6,8 @@
 	import { editorStore, itemsStore, sidebarHiddenStore } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import ItemEditor from '$lib/components/ItemEditor.svelte';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
 	let projectExists = true;
 
@@ -29,20 +31,10 @@
 		items = updatedItems;
 	});
 
-	const selectItem = (item: item) => {
-		document.getElementById(item.name)?.classList.add('selected');
-		currentItem = item;
-		for (const otherItems of items) {
-			if (otherItems.name === item.name) continue;
-			document
-				.getElementById(otherItems.name)
-				?.classList.remove('selected');
-		}
-	};
 	const deleteItem = (item: item) => {
 		items = items.filter((i) => i.name !== item.name);
 		itemsStore.set(items);
-		selectItem(items[0]);
+		currentItem = items[0];
 	};
 
 	let sidebarHidden: 'visible' | 'hidden' = 'visible';
@@ -84,15 +76,23 @@
 				{#each items as item}
 					<ContextMenu.Root>
 						<ContextMenu.Trigger>
-							<button
-								id={item.name}
-								class="text-sm text-left w-[100%] rounded h-5 truncate"
-								on:click={() => {
-									selectItem(item);
-								}}
-							>
-								{item.name}
-							</button>
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<Button
+										variant="ghost"
+										id={item.name}
+										class="text-sm text-left w-[100%] rounded h-5 truncate"
+										on:click={() => {
+											currentItem = item;
+										}}
+									>
+										{item.name}
+									</Button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>
+									<p>{item.name}, {item.type}</p>
+								</Tooltip.Content>
+							</Tooltip.Root>
 						</ContextMenu.Trigger>
 						<ContextMenu.Content class="w-32">
 							<ContextMenu.Item
@@ -114,9 +114,6 @@
 </div>
 
 <style>
-	:global(.selected) {
-		background-color: #ebcaca36;
-	}
 	#sidebar {
 		height: calc(100vh - 40px);
 	}
