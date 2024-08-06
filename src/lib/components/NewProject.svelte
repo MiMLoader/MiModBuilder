@@ -29,7 +29,7 @@
 			reportInputError('nameLabel', 'Longer than one');
 			failed = true;
 		}
-		if (name?.includes(' ')) {
+		if (name.includes(' ')) {
 			reportInputError('nameLabel', 'Cannot have spaces');
 			failed = true;
 		}
@@ -39,6 +39,10 @@
 		}
 		if (author.length < 1) {
 			reportInputError('authorLabel', 'Longer than one');
+			failed = true;
+		}
+		if (author.includes(' ')) {
+			reportInputError('nameLabel', 'Cannot have spaces');
 			failed = true;
 		}
 
