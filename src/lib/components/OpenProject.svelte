@@ -56,7 +56,7 @@
 	<Tabs.Content value="computer">
 		<Card.Root>
 			<Card.Header>
-				<Card.Description>Upload a project</Card.Description>
+				<Card.Description>Import a project</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-2"></Card.Content>
 			<Card.Footer>
