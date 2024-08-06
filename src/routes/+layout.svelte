@@ -107,10 +107,10 @@
 	<Menubar.Menu>
 		<Menubar.Trigger>Edit</Menubar.Trigger>
 		<Menubar.Content>
-			<Menubar.Item>
+			<Menubar.Item disabled>
 				Undo <Menubar.Shortcut>^Z</Menubar.Shortcut>
 			</Menubar.Item>
-			<Menubar.Item>
+			<Menubar.Item disabled>
 				Redo <Menubar.Shortcut>^⇧Z</Menubar.Shortcut>
 			</Menubar.Item>
 		</Menubar.Content>
