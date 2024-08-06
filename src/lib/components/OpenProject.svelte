@@ -9,12 +9,19 @@
 		localStorage.getItem('projects') as string,
 	);
 
+	let selectedProject: string | undefined;
 	const selectProject = (project: string) => {
+		selectedProject = project;
 		document.getElementById(project)?.classList.add('selected');
 		for (const otherProject of projects) {
 			if (otherProject === project) continue;
 			document.getElementById(otherProject)?.classList.remove('selected');
 		}
+	};
+
+	const openProject = () => {
+		if (selectedProject === undefined) return;
+		window.location.href = `/project/${selectedProject as string}`;
 	};
 </script>
 
@@ -49,7 +56,7 @@
 				</ScrollArea>
 			</Card.Content>
 			<Card.Footer>
-				<Button>Open</Button>
+				<Button on:click={openProject}>Open</Button>
 			</Card.Footer>
 		</Card.Root>
 	</Tabs.Content>

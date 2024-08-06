@@ -21,3 +21,15 @@ export interface Mod {
     tags: string[];
     priority: number;
 }
+
+export interface item {
+    name: string;
+    type: 'imgReplace' | 'none';
+}
+
+export interface Spec {
+    name: string;
+    description: string;
+    author: string;
+    items?: item[];
+}
