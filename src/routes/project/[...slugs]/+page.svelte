@@ -3,8 +3,9 @@
 	import type { item } from '$lib/types';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import * as ContextMenu from '$lib/components/ui/context-menu/index.js';
-	import { editorStore, itemsStore } from '$lib/stores';
+	import { editorStore, itemsStore, sidebarHiddenStore } from '$lib/stores';
 	import { onMount } from 'svelte';
+	import ItemEditor from '$lib/components/ItemEditor.svelte';
 
 	let projectExists = true;
 
@@ -23,13 +24,14 @@
 	editorStore.set(true);
 
 	let items: item[] = [];
-
+	let currentItem: item | undefined = items[0];
 	itemsStore.subscribe((updatedItems: item[]) => {
 		items = updatedItems;
 	});
 
 	const selectItem = (item: item) => {
 		document.getElementById(item.name)?.classList.add('selected');
+		currentItem = item;
 		for (const otherItems of items) {
 			if (otherItems.name === item.name) continue;
 			document
@@ -40,7 +42,18 @@
 	const deleteItem = (item: item) => {
 		items = items.filter((i) => i.name !== item.name);
 		itemsStore.set(items);
+		selectItem(items[0]);
 	};
+
+	let sidebarHidden: 'visible' | 'hidden' = 'visible';
+	sidebarHiddenStore.subscribe((hidden) => {
+		if (hidden) {
+			sidebarHidden = 'hidden';
+			return;
+		}
+		sidebarHidden = 'visible';
+		return;
+	});
 </script>
 
 {#if !projectExists}
@@ -64,34 +77,40 @@
 	</AlertDialog.Root>
 {/if}
 
-<div id="sidebar" class="w-32">
-	<ScrollArea class="bottom-0 border-r h-[100%]">
-		<div class="p-4">
-			{#each items as item}
-				<ContextMenu.Root>
-					<ContextMenu.Trigger>
-						<button
-							id={item.name}
-							class="text-sm text-left w-[100%] rounded h-5 truncate"
-							on:click={() => {
-								selectItem(item);
-							}}
-						>
-							{item.name}
-						</button>
-					</ContextMenu.Trigger>
-					<ContextMenu.Content class="w-32">
-						<ContextMenu.Item
-							inset
-							on:click={() => {
-								deleteItem(item);
-							}}>Delete</ContextMenu.Item
-						>
-					</ContextMenu.Content>
-				</ContextMenu.Root>
-			{/each}
-		</div>
-	</ScrollArea>
+<div class="flex flex-row">
+	<div id="sidebar" class="w-32 {sidebarHidden}">
+		<ScrollArea class="bottom-0 border-r h-[100%]">
+			<div class="p-4">
+				{#each items as item}
+					<ContextMenu.Root>
+						<ContextMenu.Trigger>
+							<button
+								id={item.name}
+								class="text-sm text-left w-[100%] rounded h-5 truncate"
+								on:click={() => {
+									selectItem(item);
+								}}
+							>
+								{item.name}
+							</button>
+						</ContextMenu.Trigger>
+						<ContextMenu.Content class="w-32">
+							<ContextMenu.Item
+								inset
+								on:click={() => {
+									deleteItem(item);
+								}}>Delete</ContextMenu.Item
+							>
+						</ContextMenu.Content>
+					</ContextMenu.Root>
+				{/each}
+			</div>
+		</ScrollArea>
+	</div>
+
+	{#if currentItem !== undefined}
+		<ItemEditor item={currentItem} />
+	{/if}
 </div>
 
 <style>

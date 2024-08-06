@@ -7,26 +7,11 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { onMount } from 'svelte';
 	import { Toaster } from '$lib/components/ui/sonner';
-	import { editorStore, itemsStore } from '$lib/stores';
+	import { editorStore, itemsStore, sidebarHiddenStore } from '$lib/stores';
 	import { get } from 'svelte/store';
 	import hotkeys from 'hotkeys-js';
 	import { toast } from 'svelte-sonner';
 	import downloadSpec from '$lib/downloadSpec';
-
-	let editor: boolean;
-
-	const newItem = (name?: string) => {
-		umami.track('items created');
-		const currItemStore = get(itemsStore);
-		name = `New Item ${(crypto.randomUUID().split('-').at(-1) as string) + currItemStore.length}`;
-		itemsStore.update((v) => {
-			return (v = [...v, { name, type: 'none' }]);
-		});
-	};
-
-	editorStore.subscribe((value) => {
-		editor = value;
-	});
 
 	onMount(() => {
 		if (localStorage.getItem('projects') === null) {
@@ -48,6 +33,30 @@
 			});
 		}
 	});
+
+	let editor: boolean;
+	editorStore.subscribe((value) => {
+		editor = value;
+	});
+
+	const newItem = (name?: string) => {
+		umami.track('items created');
+		const currItemStore = get(itemsStore);
+		name = `New Item ${(crypto.randomUUID().split('-').at(-1) as string) + currItemStore.length}`;
+		itemsStore.update((v) => {
+			return (v = [...v, { name, type: 'none' }]);
+		});
+	};
+
+	let sidebarHidden = get(sidebarHiddenStore);
+	const toggleSidebar = () => {
+		if (sidebarHidden === true) {
+			sidebarHidden = false;
+			return sidebarHiddenStore.set(false);
+		}
+		sidebarHidden = true;
+		return sidebarHiddenStore.set(true);
+	};
 
 	let openProjectRender = false;
 	const openProjectView = () => {
@@ -122,7 +131,10 @@
 				>Dark Mode</Menubar.CheckboxItem
 			>
 			<Menubar.Separator />
-			<Menubar.Item inset>Hide Sidebar</Menubar.Item>
+			<Menubar.CheckboxItem
+				bind:checked={sidebarHidden}
+				on:click={toggleSidebar}>Hide Sidebar</Menubar.CheckboxItem
+			>
 		</Menubar.Content>
 	</Menubar.Menu>
 </Menubar.Root>
