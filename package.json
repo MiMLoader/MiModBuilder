@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite dev",
+    "lint": "bunx @biomejs/biome check src",
+    "lint:fix": "bun lint --apply",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -37,6 +39,7 @@
     "@elysiajs/swagger": "^1.1.0",
     "bits-ui": "^0.21.13",
     "clsx": "^2.1.1",
+    "cmdk-sv": "^0.0.18",
     "elysia": "^1.1.5",
     "formsnap": "^1.0.1",
     "hotkeys-js": "^3.13.7",
