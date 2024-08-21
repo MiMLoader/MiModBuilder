@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
-	import type { item } from '$lib/types';
+	import type { Item, Spec } from '$lib/types';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import * as ContextMenu from '$lib/components/ui/context-menu/index.js';
 	import { editorStore, itemsStore, sidebarHiddenStore } from '$lib/stores';
@@ -8,34 +8,51 @@
 	import ItemEditor from '$lib/components/ItemEditor.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+	import { get } from 'svelte/store';
+	import { deleteItem } from '$lib/item';
 
 	let projectExists = true;
 
 	onMount(() => {
-		if (
-			localStorage.getItem(
-				`project${window.location.href.split('/').at(-1)}` as string,
-			) === null
-		) {
+		const projectName = window.location.href.split('/').at(-1);
+		if (typeof projectName !== 'string') {
+			projectExists = false;
+			return;
+		}
+		if (localStorage.getItem(`project${projectName}`) === null) {
 			projectExists = false;
 		}
 		const titleEnd = document.title;
-		document.title = `${window.location.href.split('/').at(-1)} | ${titleEnd}`;
+		document.title = `${projectName} | ${titleEnd}`;
+
+		const project = localStorage.getItem(`project${projectName}`);
+		if (project !== null) {
+			const spec: Spec = JSON.parse(project);
+			if (spec.items.length > 0) {
+				items = spec.items;
+				itemsStore.set(items);
+			}
+		}
 	});
 
 	editorStore.set(true);
 
-	let items: item[] = [];
-	let currentItem: item | undefined = items[0];
-	itemsStore.subscribe((updatedItems: item[]) => {
+	let items: Item[] = get(itemsStore);
+	let currentItem: Item | undefined = items[0];
+	const selectItem = (item: Item) => {
+		currentItem = item;
+		document.getElementById(item.name)?.classList.add('selected');
+		for (const otherItem of items) {
+			if (otherItem.name === item.name) continue;
+			document
+				.getElementById(otherItem.name)
+				?.classList.remove('selected');
+		}
+	};
+
+	itemsStore.subscribe((updatedItems: Item[]) => {
 		items = updatedItems;
 	});
-
-	const deleteItem = (item: item) => {
-		items = items.filter((i) => i.name !== item.name);
-		itemsStore.set(items);
-		currentItem = items[0];
-	};
 
 	let sidebarHidden: 'visible' | 'hidden' = 'visible';
 	sidebarHiddenStore.subscribe((hidden) => {
@@ -83,7 +100,7 @@
 										id={item.name}
 										class="text-sm text-left w-[100%] rounded h-5 truncate"
 										on:click={() => {
-											currentItem = item;
+											selectItem(item);
 										}}
 									>
 										{item.name}
@@ -99,6 +116,7 @@
 								inset
 								on:click={() => {
 									deleteItem(item);
+									currentItem = items[0];
 								}}>Delete</ContextMenu.Item
 							>
 						</ContextMenu.Content>
@@ -114,6 +132,10 @@
 </div>
 
 <style>
+	:global(.selected) {
+		background-color: #ebcaca36;
+	}
+
 	#sidebar {
 		height: calc(100vh - 40px);
 	}

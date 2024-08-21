@@ -22,14 +22,23 @@ export interface Mod {
     priority: number;
 }
 
-export interface item {
+export type types = 'mediaReplacer' | 'jsonReplacer' | 'none';
+export interface Item {
     name: string;
-    type: 'imgReplace' | 'none';
+    type: types;
+    mediaReplace?: {
+        capture: string;
+        replace: string;
+    };
+    jsonReplace?: {
+        capture: string;
+        replace: string;
+    };
 }
 
 export interface Spec {
     name: string;
     description: string;
     author: string;
-    items?: item[];
+    items: Item[];
 }

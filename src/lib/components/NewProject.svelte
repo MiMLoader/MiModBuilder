@@ -63,6 +63,7 @@
 			name,
 			author,
 			description,
+			items: [],
 		};
 
 		localStorage.setItem(`project${name}`, JSON.stringify(spec));
