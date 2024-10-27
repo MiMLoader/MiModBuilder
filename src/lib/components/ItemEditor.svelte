@@ -4,8 +4,8 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { writeItems } from '$lib/item';
-	import type { Item as itemT, Spec, types as typesT } from '$lib/types';
+	import { writeItems, selectItem } from '$lib/item';
+	import type { Item as itemT, types as typesT } from '$lib/types';
 	import { cn } from '$lib/utils.js';
 	import { Pencil } from 'lucide-svelte';
 	import Check from 'lucide-svelte/icons/check';
@@ -16,6 +16,7 @@
 	import { get } from 'svelte/store';
 
 	export let item: itemT;
+	const ogItem = item;
 
 	const types = [
 		{
@@ -41,8 +42,8 @@
 	$: selectedValue =
 		types.find((f) => f.value === typeValue)?.label ??
 		types.find((f) => f.value === item.type)?.label;
-		
-		const closeAndFocusTrigger = (triggerId: string) => {
+
+	const closeAndFocusTrigger = (triggerId: string) => {
 		open = false;
 		tick().then(() => {
 			document.getElementById(triggerId)?.focus();
@@ -55,25 +56,23 @@
 	};
 
 	const saveItem = () => {
-		const ogItem = item;
-
 		item = {
 			name: nameValue,
 			type: typeValue,
+			props: item.props,
 		};
-		
-		console.log(ogItem, item);
+
 		const currentItemsStore = get(itemsStore);
-
-		console.log(ogItem);
-
-		for (const item of currentItemsStore) {
-			if (item !== ogItem) continue;
-			console.log(item);
+		for (let i = 0; i < currentItemsStore.length; i++) {
+			if (ogItem !== currentItemsStore[i]) continue;
+			currentItemsStore[i] = item;
+			itemsStore.set(currentItemsStore);
+			
+			writeItems(window.location.href.split('/').at(-1));
+			editInfoRender = false;
+			selectItem(item);
 		}
 
-		writeItems(window.location.href.split('/').at(-1));
-		editInfoRender = false;
 	};
 </script>
 
@@ -86,10 +85,10 @@
 	>
 		<Pencil class="h-4 w-4" />
 	</Button>
-	{#if item.type === 'mediaReplacer'}
+	{#if item.type === 'mediaReplace'}
 		<MediaReplacer {item} />
 	{:else}
-		<h1 class="justify-self-center">Select a different type</h1>
+		<p>Type has no props.</p>
 	{/if}
 </div>
 

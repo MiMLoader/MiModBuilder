@@ -3,15 +3,26 @@
 	import type { Item, Spec } from '$lib/types';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import * as ContextMenu from '$lib/components/ui/context-menu/index.js';
-	import { editorStore, itemsStore, sidebarHiddenStore } from '$lib/stores';
+	import {
+		editorStore,
+		itemsStore,
+		sidebarHiddenStore,
+		currentItemStore,
+	} from '$lib/stores';
 	import { onMount } from 'svelte';
 	import ItemEditor from '$lib/components/ItemEditor.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { get } from 'svelte/store';
-	import { deleteItem } from '$lib/item';
+	import { deleteItem, selectItem } from '$lib/item';
 
 	let projectExists = true;
+	let items: Item[] = get(itemsStore);
+	let currentItem = get(currentItemStore);
+
+	currentItemStore.subscribe((currentItemUpdated) => {
+		currentItem = currentItemUpdated;
+	});
 
 	onMount(() => {
 		const projectName = window.location.href.split('/').at(-1);
@@ -36,19 +47,6 @@
 	});
 
 	editorStore.set(true);
-
-	let items: Item[] = get(itemsStore);
-	let currentItem: Item | undefined = items[0];
-	const selectItem = (item: Item) => {
-		currentItem = item;
-		document.getElementById(item.name)?.classList.add('selected');
-		for (const otherItem of items) {
-			if (otherItem.name === item.name) continue;
-			document
-				.getElementById(otherItem.name)
-				?.classList.remove('selected');
-		}
-	};
 
 	itemsStore.subscribe((updatedItems: Item[]) => {
 		items = updatedItems;
@@ -127,7 +125,9 @@
 	</div>
 
 	{#if currentItem !== undefined}
-		<ItemEditor item={currentItem} />
+		{#key currentItem}
+			<ItemEditor item={currentItem} />
+		{/key}
 	{/if}
 </div>
 

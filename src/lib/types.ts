@@ -22,18 +22,11 @@ export interface Mod {
     priority: number;
 }
 
-export type types = 'mediaReplacer' | 'jsonReplacer' | 'none';
+export type types = 'mediaReplace' | 'jsonReplace' | 'none';
 export interface Item {
     name: string;
     type: types;
-    mediaReplace?: {
-        capture: string;
-        replace: string;
-    };
-    jsonReplace?: {
-        capture: string;
-        replace: string;
-    };
+    props: Record<string, string>;
 }
 
 export interface Spec {
