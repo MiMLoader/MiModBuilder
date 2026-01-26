@@ -1,14 +1,27 @@
-FROM oven/bun
-
+FROM oven/bun AS base
 WORKDIR /app
 
-RUN apt-get update
-RUN apt-get install -y wget curl
+FROM base AS install
+RUN mkdir -p /temp/dev
+COPY package.json bun.lock /temp/dev/
+RUN cd /temp/dev && bun install --frozen-lockfile
 
-COPY . /app/
+RUN mkdir -p /temp/prod
+COPY package.json bun.lock /temp/prod/
+RUN cd /temp/prod && bun install --frozen-lockfile --production
 
-RUN bun install
+FROM base AS build
+COPY --from=install /temp/dev/node_modules node_modules
+COPY . .
 
-RUN bun --bun run build
+RUN bun run build
 
-CMD ["bun", "--bun", "run", "build/index.js"]
+FROM oven/bun
+WORKDIR /app
+COPY --from=build /app/build build/
+COPY --from=build /app/node_modules node_modules/
+COPY package.json .
+
+USER bun
+EXPOSE 3000/tcp
+ENTRYPOINT [ "bun", "run", "./build" ]
