@@ -43,7 +43,7 @@ cardsStore.subscribe((newCards) => {
                                 <Sidebar.MenuItem>
                                     <Sidebar.MenuButton>
                                         {#snippet child({ props })}
-                                            <a href={`/waldo/card/${card.name}`} {...props}>
+                                            <a data-sveltekit-reload href={`/waldo/card/${card.name}`} {...props}>
                                                 <span>{card.name}</span>
                                             </a>
                                         {/snippet}
